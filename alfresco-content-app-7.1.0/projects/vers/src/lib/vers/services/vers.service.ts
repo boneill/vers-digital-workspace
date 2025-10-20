@@ -3,9 +3,9 @@
 import { LogService, NotificationService } from '@alfresco/adf-core';
 import { Node, NodeEntry } from '@alfresco/js-api';
 import { inject, Injectable } from '@angular/core';
-import { Observable, of, switchMap, tap } from 'rxjs';
+import { Observable, of, Subject, switchMap, tap } from 'rxjs';
 import { ContentApiService } from '@alfresco/aca-shared';
-import { DocumentListService, NodesApiService } from '@alfresco/adf-content-services';
+import { ContentNodeDialogService, ContentNodeSelectorComponent, ContentNodeSelectorComponentData, DocumentListService, NodesApiService, ShareDataRow } from '@alfresco/adf-content-services';
 import { MatDialog } from '@angular/material/dialog';
 import { TransferFolderDialog } from '../dialogs/transfer-folder-dialog/transfer-folder.dialog';
 
@@ -106,6 +106,12 @@ export class VersService {
     console.log("VersService queueVeosForCreation called", records);
 
     //open a dialog to request which transfer to create veo for.
+    this.getVersTransfersRootFolder().subscribe(rootFolder => {
+
+      this.getConsignmentTransferSelection(rootFolder.id).subscribe(result => console.log("selected" , result));
+
+
+    });
 
 
 
@@ -185,72 +191,62 @@ getOrCreateFolder(folderName: string, nodeType: string, parentNodeId: string = '
       }
     }
 
-
-  //   console.log("editBrokingFolder", folder);
-
-  //   this.store.select(getUserProfile).pipe(
-  //     take(1),
-  //     map((profile: any) => {
-
-  //       //console.log("user profile groups", profile.groups);
-  //       let isAdminRole = false;
-  //       profile.groups.forEach(function (group: any) {
-  //         if(!isAdminRole){
-  //           if(group.id === "GROUP_ALFRESCO_ADMINISTRATORS" ||
-  //             group.id === "GROUP_u-AU_EntBroking_Role_IT_Admin"
-  //           ){
-  //             isAdminRole = true;
-  //           }
-  //           //console.log(group.id);
-  //         }
-  //       });
-
-  //       return isAdminRole;
-
-  //     })
-  //     ).subscribe((isAdmin: boolean) => {
-
-  //       this.nodesApiService.getNode(folder.entry.id).pipe(
-  //         take(1)
-  //       ).subscribe((node) => {
-  //         console.log("the node", node);
-
-  //         //console.log("service isAdmin", isAdmin);
-  //         const dialog = this.dialogRef.open(BrokingFolderDialogComponent, {
-  //           data: {
-  //             folder: node,
-  //             isAdminRole: isAdmin
-  //           },
-  //           width: '400px'
-  //         });
-
-  //         dialog.componentInstance.error.subscribe((message: string) => {
-  //           this.store.dispatch(new SnackbarErrorAction(message));
-  //         });
-
-  //         dialog.afterClosed().subscribe(node => {
-  //           //console.log("Dialog closed", node);
-  //           if (node) {
-  //             this.nodesApiService.nodeUpdated.next(node);
-  //             this.store.dispatch(new ReloadDocumentListAction());
-  //             this.queryBuilder.update();
-  //           //   this.store.select(isInfoDrawerOpened).pipe(take(1)).subscribe(isOpen => {
-  //           //     if(isOpen)
-  //           //       this.store.dispatch(new ToggleInfoDrawerAction());
-  //           //   });
-  //           }
-  //         });
-
-  //       });
-
-  //     });
+    getConsignmentTransferSelection(/*action: NodeAction, contentEntities: NodeEntry[], */transferRootFolder: string,  focusedElementOnCloseSelector?: string): Subject<Node[]> {
+        //const currentParentFolderId = '-root-'
 
 
-  // }
- //}
+        const title = "Select Consignment Transfer";
 
 
+        const data: ContentNodeSelectorComponentData = {
+          selectionMode: 'single',
+          title,
+          currentFolderId: transferRootFolder,
+          //actionName: action,
+          dropdownHideMyFiles: true,
+          showDropdownSiteList: false,
+          showSearch: false,
+          showFilesInResult: false,
+          showLocalUploadButton: false,
+          rowFilter: this.transfersRowFilter.bind(this),
+          //imageResolver: this.imageResolver.bind(this),
+          //breadcrumbTransform: this.customizeBreadcrumb.bind(this),
+          select: new Subject<Node[]>(),
+          excludeSiteContent: ContentNodeDialogService.nonDocumentSiteContent
+        };
 
+        this.dialogRef
+          .open(ContentNodeSelectorComponent, {
+            data,
+            panelClass: 'adf-content-node-selector-dialog',
+            width: '630px',
+            role: 'dialog'
+          })
+          .afterClosed()
+          .subscribe(() => {
+
+            if(focusedElementOnCloseSelector)
+              this.focusAfterClose(focusedElementOnCloseSelector)
+
+          });
+
+        data.select.subscribe({
+          complete: this.close.bind(this)
+        });
+
+        return data.select;
+  }
+
+  /** filter rows to only show transfer folders */
+  private transfersRowFilter(row: ShareDataRow): boolean {
+      const node: Node = row.node.entry;
+
+      return !node.isFile && node.nodeType !== 'vers:transfer';
+    }
+
+    close() {
+    this.dialogRef.closeAll();
+  }
 
 
 
