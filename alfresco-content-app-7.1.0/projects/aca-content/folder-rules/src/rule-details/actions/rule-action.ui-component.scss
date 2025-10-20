@@ -1,0 +1,42 @@
+.aca-rule-action {
+  max-width: 100%;
+
+  &__form {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+
+    adf-card-view {
+      margin-top: -15px;
+
+      .adf-property-list .adf-property adf-card-view-item-dispatcher adf-card-view-textitem {
+        display: inline-block;
+        width: 100%;
+
+        .adf-textitem-clickable {
+          padding-top: 0;
+        }
+
+        .adf-textitem-action {
+          .adf-textitem-icon {
+            margin-left: -10px;
+          }
+        }
+      }
+    }
+  }
+
+  &-full-width {
+    height: fit-content;
+    flex: 1;
+
+    &.aca-rule-action-form-field {
+      min-width: unset;
+    }
+
+    &.aca-rule-action-card-view {
+      overflow: hidden;
+      margin-top: 11px;
+    }
+  }
+}

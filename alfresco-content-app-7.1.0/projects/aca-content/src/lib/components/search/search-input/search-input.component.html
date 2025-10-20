@@ -1,0 +1,58 @@
+<button class="app-search-container"
+  [matMenuTriggerFor]="searchOptionsMenu"
+  (menuOpened)="onMenuOpened()"
+  (menuClosed)="syncInputValues()"
+>
+  <mat-form-field class="app-input-form-field" appearance="outline">
+    <button class="aca-search-input--search-button" mat-icon-button matPrefix (click)="searchByOption()" [title]="'SEARCH.BUTTON.TOOLTIP' | translate">
+      <mat-icon [attr.aria-label]="'SEARCH.BUTTON.ARIA-LABEL' | translate">search</mat-icon>
+    </button>
+
+    <input
+      matInput
+      [attr.aria-label]="'SEARCH.INPUT.ARIA-LABEL' | translate"
+      [type]="'text'"
+      [readonly]="true"
+      [value]="searchedWord"
+      [placeholder]="'SEARCH.INPUT.PLACEHOLDER' | translate"
+    />
+
+    <div matSuffix>
+      <mat-icon class="app-suffix-icon">arrow_drop_down</mat-icon>
+
+      <button class="aca-search-input--close-button" mat-icon-button [attr.aria-label]="'SEARCH.CLOSE_BUTTON.ARIA_LABEL' | translate" (click)="exitSearch()">
+        <mat-icon class="app-suffix-icon">close</mat-icon>
+      </button>
+    </div>
+  </mat-form-field>
+</button>
+
+<mat-menu #searchOptionsMenu="matMenu" [overlapTrigger]="true" class="app-search-options-menu">
+  <div (keydown.tab)="$event.stopPropagation()" (keydown.shift.tab)="$event.stopPropagation()" tabindex=0>
+    <div cdkTrapFocus>
+      <app-search-input-control
+        #searchInputControl
+        (click)="$event.stopPropagation()"
+        (submit)="onSearchSubmit($event)"
+        (searchChange)="onSearchChange($event)"
+        (validationError)="error = $event"
+        [hasLibrariesConstraint]="hasLibrariesConstraint"
+      />
+      <mat-error *ngIf="error" class="app-search-error">
+        {{ error | translate }}
+      </mat-error>
+      <div id="search-options" class="app-search-options">
+        <mat-checkbox *ngFor="let option of searchOptions"
+          id="{{ option.id }}"
+          [(ngModel)]="option.value"
+          [disabled]="option.shouldDisable()"
+          (change)="searchByOption()"
+          (keyup.enter)="$event.stopPropagation()"
+          (click)="$event.stopPropagation()"
+        >
+          {{ option.key | translate }}
+        </mat-checkbox>
+      </div>
+    </div>
+  </div>
+</mat-menu>

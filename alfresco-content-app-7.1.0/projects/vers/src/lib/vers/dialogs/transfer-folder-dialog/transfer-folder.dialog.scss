@@ -1,0 +1,57 @@
+//@use '../../mat-selectors.scss' as ms;
+@use '../../../../../../aca-content/src/lib/ui/mat-selectors.scss' as ms;
+
+//$mat-form-field-hide-placeholder: '.mat-form-field-hide-placeholder';
+
+.adf-folder-dialog {
+    .adf-folder-dialog-content {
+        padding: 0;
+        overflow: unset;
+
+        #{ms.$mat-form-field-infix} {
+            padding-bottom: 3.5px;
+        }
+
+        .mat-form-field-hint-wrapper {
+            padding-left: 0;
+            margin-left: -2px;
+            color: var(--adf-theme-foreground-secondary-text-color);
+            font-size: 10.5px;
+        }
+    }
+
+    .adf-folder-dialog-title {
+        display: inline-flex;
+    }
+}
+
+.adf-fill-remaining-space {
+    flex: 1 1 auto;
+}
+
+
+.adf-full-width {
+    width: 100%;
+}
+
+.adf-dialog-buttons button {
+    text-transform: uppercase;
+}
+
+.adf-dialog-action-button:enabled {
+    color: var(--theme-primary-color);
+}
+
+.adf-dialog-action-button:disabled > span {
+    color: var(--adf-theme-foreground-text-color-054);
+}
+
+@media screen and (width <= 380px) {
+    .adf-folder-dialog-title {
+        margin: 0;
+    }
+
+    .adf-dialog-buttons {
+        padding: 0;
+    }
+}

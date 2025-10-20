@@ -1,0 +1,13 @@
+{
+  "recommendations": [
+    "angular.ng-template",
+    "streetsidesoftware.code-spell-checker",
+    "editorconfig.editorconfig",
+    "davidanson.vscode-markdownlint",
+    "esbenp.prettier-vscode",
+    "eamodio.gitlens",
+    "stylelint.vscode-stylelint",
+    "nrwl.angular-console",
+    "dbaeumer.vscode-eslint"
+  ]
+}

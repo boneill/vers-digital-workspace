@@ -1,0 +1,122 @@
+$search-width: 594px;
+$search-height: 64px;
+$search-background: var(--theme-search-background-color);
+$search-border-radius: 4px;
+
+.app-search-container {
+  color: var(--theme-foreground-text-color);
+  width: 100%;
+  max-width: $search-width;
+  height: $search-height;
+  border: none;
+  background: none;
+  padding: 0;
+
+  &:focus-visible {
+    outline: 2px solid var(--theme-blue-button-color);
+    border-radius: 4px;
+  }
+
+  &:focus-within {
+    label {
+      display: none;
+    }
+  }
+}
+
+.app-search-options-menu {
+  background-color: var(--theme-dialog-background-color);
+  width: $search-width;
+  /* stylelint-disable-next-line declaration-no-important */
+  min-width: $search-width !important;
+  border-radius: $search-border-radius;
+}
+
+.aca-search-input {
+  width: 100%;
+  max-width: $search-width;
+  background-color: $search-background;
+  border-radius: $search-border-radius;
+  height: $search-height;
+
+  .app-suffix-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+  }
+}
+
+.app-search-options {
+  color: var(--theme-text-color);
+  border-top: 1px solid var(--theme-divider-color);
+  padding: 25px;
+  display: flex;
+  flex-direction: row;
+  column-gap: 24px;
+}
+
+.app-search-error {
+  position: absolute;
+  gap: 4px;
+  padding-left: 17px;
+  margin-top: 4px;
+  font-size: 12px;
+}
+
+@media screen and (max-width: 959px) {
+  $search-width-small: 400px;
+
+  .aca-search-input {
+    max-width: $search-width-small;
+  }
+
+  .app-search-container {
+    max-width: $search-width-small;
+  }
+
+  .app-search-options-menu {
+    width: $search-width-small;
+  }
+
+  .app-search-options {
+    padding-left: 20px;
+
+    label {
+      max-width: 105px;
+    }
+
+    .app-search-options-checkbox {
+      padding: 3px 20px 3px 0;
+
+      label {
+        padding: 0;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 599px) {
+  $search-width-xsmall: 220px;
+
+  .aca-search-input {
+    max-width: $search-width-xsmall;
+  }
+
+  .app-search-container {
+    max-width: $search-width-xsmall;
+  }
+
+  .app-search-options-menu {
+    width: $search-width-xsmall;
+  }
+
+  .app-search-options label {
+    max-width: 180px;
+  }
+}
+
+@media screen and (max-width: 380px) {
+  .aca-search-input {
+    max-width: 148px;
+  }
+}

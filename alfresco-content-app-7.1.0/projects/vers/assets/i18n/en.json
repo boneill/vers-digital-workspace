@@ -1,0 +1,29 @@
+{
+  "VERS": {
+    "ACTION_CREATE_VEO_TITLE": "Create VEO",
+    "ACTION_CREATE_VERS_TRANSFER": "Create Vers Transfer",
+    "ERRORS": {
+      "UNSUPPORTED_PLATFORM": "Only supported for Windows and MacOS platforms",
+      "ALREADY_LOCKED": "Document '{{ nodeId }}' is locked by '{{ lockOwner }}'",
+      "MISSING_PROTOCOL_HANDLER": "No protocol handler found for '{{ nodeName }}'"
+    },
+    "TRANSFER_FOLDER_DIALOG": {
+      "CREATE_FOLDER_TITLE": "Create Transfer Folder",
+      "CONSIGNMENT_ID":{
+        "LABEL": "Consignment ID"
+      },
+      "ACCESS":{
+        "LABEL": "Access",
+        "ERRORS":{
+          "REQUIRED":"Please select a value for the consignment access"
+        }
+      }
+    },
+    "DOCUMENT_LIST":{
+      "COLUMNS":{
+        "CONSIGNMENT_ID":"Consignment Id",
+        "CONSIGNMENT_ACCESS": "Access"
+      }
+    }
+  }
+}

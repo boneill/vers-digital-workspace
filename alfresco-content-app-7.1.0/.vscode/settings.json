@@ -1,0 +1,20 @@
+{
+  "javascript.preferences.quoteStyle": "single",
+  "javascript.preferences.importModuleSpecifier": "relative",
+  "typescript.preferences.quoteStyle": "single",
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "editor.formatOnSave": false,
+  "[json]": {
+    "editor.formatOnSave": false
+  },
+  "markdownlint.config": {
+    "MD033": false
+  },
+  "css.validate": false,
+  "less.validate": false,
+  "scss.validate": false,
+  "stylelint.validate": [
+    "css",
+    "scss"
+  ]
+}

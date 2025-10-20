@@ -1,0 +1,151 @@
+{
+  "ACA_FOLDER_RULES": {
+    "ACTIONS": {
+      "MANAGE_RULES": "Hallitse sääntöjä",
+      "GO_BACK": "Palaa takaisin"
+    },
+    "EDIT_RULE_DIALOG": {
+      "CANCEL": "Peruuta",
+      "CLOSE": "Sulje",
+      "CREATE": "Luo",
+      "CREATE_TITLE": "Luo sääntö",
+      "UPDATE": "Päivitä",
+      "UPDATE_TITLE": "Muokkaa sääntöä",
+      "OPEN_ACTION_MENU": "Avaa toimintovalikko"
+    },
+    "RULE_DETAILS": {
+      "LABEL": {
+        "NAME": "Nimi",
+        "DESCRIPTION": "Kuvaus",
+        "WHEN": "Kun",
+        "PERFORM_ACTIONS": "Suorita toimintoja",
+        "OPTIONS": "Muut valinnat"
+      },
+      "PLACEHOLDER": {
+        "NAME": "Syötä säännön nimi",
+        "DESCRIPTION": "Syötä säännön kuvaus",
+        "NO_DESCRIPTION": "Ei kuvausta",
+        "VALUE": "Arvo",
+        "CHOOSE_FOLDER": "Valitse kohdekansio"
+      },
+      "ERROR": {
+        "REQUIRED": "Tämä kenttä on pakollinen",
+        "RULE_COMPOSITE_CONDITION_INVALID": "Yksi tai useampi ehtoryhmä on tyhjä",
+        "INSUFFICIENT_TRIGGERS_SELECTED": "Vähintään yksi laukaisija on pakollinen"
+      },
+      "TRIGGERS": {
+        "INBOUND": "Kohteet luodaan tai syötetään tähän kansioon",
+        "UPDATE": "Kohteet päivitetään",
+        "OUTBOUND": "Kohteet poistetaan tai ne poistuvat tästä kansiosta"
+      },
+      "OPTIONS": {
+        "IS_INHERITABLE": "Sääntö koskee alikansioita",
+        "IS_ASYNCHRONOUS": "Suorita sääntö taustalla",
+        "DISABLE_RULE": "Poista sääntö käytöstä",
+        "ERROR_SCRIPT": "Suorita komentosarja, jos virheitä havaitaan",
+        "NO_SCRIPT": "Ei mitään"
+      },
+      "COMPARATORS": {
+        "EQUALS": "(=) Yhtä suuri kuin",
+        "CONTAINS": "Sisältää",
+        "STARTS_WITH": "Alkaa merkillä",
+        "ENDS_WITH": "Loppuu merkkiin",
+        "GREATER_THAN": "(>) Suurempi kuin",
+        "LESS_THAN": "(<) Pienempi kuin",
+        "GREATER_THAN_OR_EQUAL": "(>=) Suurempi tai yhtä suuri kuin",
+        "LESS_THAN_OR_EQUAL": "(<=) Vähemmän tai yhtä paljon",
+        "ON": "(=) Tänä ajankohtana",
+        "AFTER": "(>) Jälkeen",
+        "BEFORE": "(<) Ennen",
+        "ON_OR_AFTER": "(>=) Tänä ajankohtana tai sen jälkeen",
+        "ON_OR_BEFORE": "(<=) Tänä ajankohtana tai sitä ennen",
+        "INSTANCE_OF": "(=) On"
+      },
+      "FIELDS": {
+        "NAME": "Nimi",
+        "SIZE": "Koko",
+        "MIMETYPE": "MIME-tyyppi",
+        "ENCODING": "Koodaus",
+        "HAS_CATEGORY": "Sisältää luokan",
+        "HAS_TAG": "Sisältää tunnuksen",
+        "HAS_ASPECT": "Sisältää ominaisuusjoukon"
+      },
+      "LOGIC_OPERATORS": {
+        "IF": "Jos",
+        "NOT_IF": "EI jos",
+        "AND": "Ja",
+        "OR": "Tai"
+      },
+      "CONDITION_BUTTONS": {
+        "ADD_CONDITION": "Lisää ehto",
+        "ADD_GROUP": "Lisää ehtoryhmä",
+        "REMOVE": "Poista"
+      },
+      "NO_CONDITIONS": "Ei ehtoja",
+      "NO_CONDITIONS_IN_GROUP": "Ryhmässä ei ole ehtoja",
+      "ACTION_BUTTONS": {
+        "ADD_ACTION": "Lisää toiminto",
+        "REMOVE": "Poista"
+      },
+      "ACTION_SELECT_PLACEHOLDER": "Valitse toiminto"
+    },
+    "MANAGE_RULES": {
+      "TOOLBAR": {
+        "BREADCRUMB": {
+          "RULES": "säännöt"
+        },
+        "ACTIONS": {
+          "CREATE_RULE": "Luo sääntö",
+          "LINK_RULES": "Linkitä sääntöjä",
+          "EDIT_RULE": "Muokkaa",
+          "SEE_IN_FOLDER": "Katso kansiosta",
+          "INHERIT_RULES": "Peri sääntöjä"
+        }
+      },
+      "EMPTY_RULES_LIST": {
+        "TITLE": "Luettelo on tyhjä",
+        "SUBTITLE": "Tälle kansiolle ei ole vielä määritelty sääntöjä."
+      }
+    },
+    "CONFIRMATION_DIALOG": {
+      "DELETE_RULE": {
+        "TITLE": "Poista sääntö",
+        "MESSAGE": "Haluatko varmasti poistaa tämän säännön?"
+      },
+      "DELETE_RULE_SET_LINK": {
+        "TITLE": "Poista sääntöjoukon linkki",
+        "MESSAGE": "Haluatko varmasti poistaa tähän sääntöjoukkoon johtavan linkin?"
+      }
+    },
+    "RULE_LIST": {
+      "OWNED_RULES": "Säännöt nykyisestä kansiosta",
+      "LINKED_RULES": "Säännöt linkitetystä kansiosta",
+      "INHERITED_RULES": "Perityt säännöt",
+      "LOAD_MORE_RULE_SETS": "Lataa sääntöjä muista kansioista",
+      "LOAD_MORE_RULES": "Lataa lisää sääntöjä",
+      "LOADING_RULES": "Sääntöjä ladataan",
+      "TOGGLE_RULE_STATE": "Muuta käytössä olevan säännön tila",
+      "INHERITED_RULES_WILL_BE_RUN_FIRST": "Perityt säännöt suoritetaan ensin",
+      "ALL_LINKED_RULES_ARE_DISABLED": "Kaikki tästä sääntöjoukosta linkitetyt säännöt on poistettu käytöstä"
+    },
+    "LINK_RULES_DIALOG": {
+      "TITLE": "Valitse kansio, josta sääntöjä linkitetään",
+      "CANCEL": "Peruuta",
+      "SUBMIT": "Valitse kansio",
+      "EMPTY_RULES_LIST": {
+        "TITLE": "Ei omistettuja sääntöjä",
+        "SUBTITLE": "Valitulla kansiolla ei ole omia sääntöjä."
+      },
+      "LIST_OF_RULES_TO_LINK": "Luettelo säännöistä, jotka linkitetään",
+      "ERRORS": {
+        "REQUEST_FAILED": "Virhe yritettäessä luoda linkki sääntöjoukkoon"
+      }
+    },
+    "ERRORS": {
+      "DELETE_RULE_SET_LINK_FAILED": "Virhe yritettäessä poistaa linkki sääntöjoukosta"
+    },
+    "AUTOCOMPLETE": {
+      "NO_OPTIONS_FOUND": "Vaihtoehtoja ei löytynyt"
+    }
+  }
+}
