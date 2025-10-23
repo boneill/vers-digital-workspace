@@ -7,7 +7,9 @@ import { provideTranslations} from '@alfresco/adf-core';
 // import { VersService } from './vers/services/vers.service';
 import { provideEffects } from '@ngrx/effects';
 import { VersEffects } from './vers/effects/vers.effects';
-import { hasDispositionLifecycle, isParentTransferFolder, isRecordsManager, isRootForTransfers, isTransferFolder } from './vers/rules/actions.rules';
+import { hasDispositionLifecycle, hasVeoCreationFailed, hasVeoCreationSucceeded,
+  isParentTransferFolder, isPartOfVeoCreationRequest, isRecordsManager,
+  isRootForTransfers, isTransferFolder, isVeoCreationPending} from './vers/rules/actions.rules';
 //import { MyExtensionService } from './my-extension.service';
 
 
@@ -22,7 +24,11 @@ export function provideVersExtension(): (Provider | EnvironmentProviders)[] {
         'vers.selection.isTransferFolder': isTransferFolder,
         'vers.navigation.isParentTransferFolder': isParentTransferFolder,
         'vers.role.isRecordsManager': isRecordsManager,
-        'vers.selection.hasDispositionLifecycle': hasDispositionLifecycle
+        'vers.selection.hasDispositionLifecycle': hasDispositionLifecycle,
+        'vers.selection.hasVeoCreationSucceeded': hasVeoCreationSucceeded,
+        'vers.selection.hasVeoCreationFailed': hasVeoCreationFailed,
+        'vers.selection.isVeoCreationPending': isVeoCreationPending,
+        'vers.selection.isPartOfVeoCreationRequest': isPartOfVeoCreationRequest,
       }
     })
   ];

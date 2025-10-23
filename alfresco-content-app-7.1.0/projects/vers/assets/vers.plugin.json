@@ -28,7 +28,15 @@
           "type": "core.every",
           "parameters": [
             {"type": "rule", "value": "vers.role.isRecordsManager"},
-            {"type": "rule", "value": "vers.selection.hasDispositionLifecycle"}
+            {"type": "rule", "value": "vers.selection.hasDispositionLifecycle"},
+            { "type": "rule", "value": "core.not",
+              "parameters": [
+                {
+                "type": "rule",
+                "value": "vers.selection.isPartOfVeoCreationRequest"
+                }
+              ]
+            }
           ]
         }
       ],

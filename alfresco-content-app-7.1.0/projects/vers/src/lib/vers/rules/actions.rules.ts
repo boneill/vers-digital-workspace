@@ -117,12 +117,77 @@ export function isRecordsManager(context: RuleContext): boolean {
 }
 
 /**
+ * checks if a record has veo creation status of pending
+ *
+ * JSON ref: 'vers.selection.isVeoCreationPending'
+ */
+export function isVeoCreationPending(context: RuleContext): boolean {
+  //console.log('hasDispositionLifecycle Context: ', context);
+
+  if (!context.selection.isEmpty && !navigation.isTrashcan(context)) {
+    return context.selection.nodes.every((node: any) => node.entry
+      && (node.entry.aspectNames.includes('vers:veoStatusPending')));
+  }
+  return false;
+}
+
+/**
+ * checks if a record has veo creation status of success
+ *
+ * JSON ref: 'vers.selection.hasVeoCreationSucceeded'
+ */
+export function hasVeoCreationSucceeded(context: RuleContext): boolean {
+  //console.log('hasDispositionLifecycle Context: ', context);
+
+  if (!context.selection.isEmpty && !navigation.isTrashcan(context)) {
+    return context.selection.nodes.every((node: any) => node.entry
+      && (node.entry.aspectNames.includes('vers:veoStatusSuccess')));
+  }
+  return false;
+}
+
+/**
+ * checks if a record has veo creation status of Failed
+ *
+ * JSON ref: 'vers.selection.hasVeoCreationFailed'
+ */
+export function hasVeoCreationFailed(context: RuleContext): boolean {
+  //console.log('hasDispositionLifecycle Context: ', context);
+
+  if (!context.selection.isEmpty && !navigation.isTrashcan(context)) {
+    return context.selection.nodes.every((node: any) => node.entry
+      && (node.entry.aspectNames.includes('vers:veoStatusFailed')));
+  }
+  return false;
+}
+
+/**
+ * checks if a record is already part of a veo creation process
+ *
+ * JSON ref: 'vers.selection.isPartOfVeoCreationRequest'
+ */
+export function isPartOfVeoCreationRequest(context: RuleContext): boolean {
+  //console.log('hasDispositionLifecycle Context: ', context);
+
+  if (!context.selection.isEmpty &&
+    (hasVeoCreationFailed(context) ||
+    isVeoCreationPending(context) ||
+    hasVeoCreationSucceeded(context))
+  ) {
+
+      return true;
+  }
+  return false;
+}
+
+
+/**
  * checks if a node has a disposition lifecycle attached
  * VEO's can only be created if they are part of a disposition schedule (RDA)
  * JSON ref: 'vers.selection.hasDispositionLifecycle'
  */
 export function hasDispositionLifecycle(context: RuleContext): boolean {
-  console.log('hasDispositionLifecycle Context: ', context);
+  //console.log('hasDispositionLifecycle Context: ', context);
 
   if (!context.selection.isEmpty && !navigation.isTrashcan(context)) {
     return context.selection.nodes.every((node: any) => node.entry
