@@ -69,3 +69,8 @@ nx test <project> -- --watch
 
 Upon changing unit tests code, you can track the coverage results either in the console output, or by reloading the HTML report in the browser.
 
+### Build Code
+go to root of project
+npm run build
+go to dist/content-ce and zip contents
+zip -r vers.zip .
