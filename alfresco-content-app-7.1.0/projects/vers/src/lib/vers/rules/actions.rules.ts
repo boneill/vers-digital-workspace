@@ -108,7 +108,7 @@ export function isRecordsManager(context: RuleContext): boolean {
   if (groups && groups.length > 0) {
     for (var group of groups) {
       if (group.id && group.id.indexOf('GROUP_RecordsManager') >= 0) {
-        //console.log("Records Manager", group.id);
+        console.log("Records Manager", group.id);
         return true;
       }
     }
@@ -126,7 +126,7 @@ export function isVeoCreationPending(context: RuleContext): boolean {
 
   if (!context.selection.isEmpty && !navigation.isTrashcan(context)) {
     return context.selection.nodes.every((node: any) => node.entry
-      && (node.entry.aspectNames.includes('vers:veoStatusPending')));
+      && (node.entry?.aspectNames?.includes('vers:veoStatusPending')));
   }
   return false;
 }
@@ -141,7 +141,7 @@ export function hasVeoCreationSucceeded(context: RuleContext): boolean {
 
   if (!context.selection.isEmpty && !navigation.isTrashcan(context)) {
     return context.selection.nodes.every((node: any) => node.entry
-      && (node.entry.aspectNames.includes('vers:veoStatusSuccess')));
+      && (node.entry?.aspectNames?.includes('vers:veoStatusSuccess')));
   }
   return false;
 }
@@ -156,7 +156,7 @@ export function hasVeoCreationFailed(context: RuleContext): boolean {
 
   if (!context.selection.isEmpty && !navigation.isTrashcan(context)) {
     return context.selection.nodes.every((node: any) => node.entry
-      && (node.entry.aspectNames.includes('vers:veoStatusFailed')));
+      && (node.entry?.aspectNames?.includes('vers:veoStatusFailed')));
   }
   return false;
 }
@@ -187,11 +187,19 @@ export function isPartOfVeoCreationRequest(context: RuleContext): boolean {
  * JSON ref: 'vers.selection.hasDispositionLifecycle'
  */
 export function hasDispositionLifecycle(context: RuleContext): boolean {
-  //console.log('hasDispositionLifecycle Context: ', context);
+  console.log('hasDispositionLifecycle Context: ', context);
 
   if (!context.selection.isEmpty && !navigation.isTrashcan(context)) {
-    return context.selection.nodes.every((node: any) => node.entry
-      && (node.entry.aspectNames.includes('rma:dispositionLifecycle')));
+    return context.selection?.nodes?.every((node: any) => node.entry
+      &&
+      (
+        (node.entry?.aspectNames?.includes('rma:dispositionLifecycle'))  ||
+        // need the additional check as the selected node will not
+        // have the aspectNames element if selected from search
+        (node.entry?.properties['rma:recordSearchHasDispositionSchedule'] == true)
+
+      )
+    );
   }
   return false;
 

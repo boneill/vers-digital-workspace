@@ -227,22 +227,36 @@ onVeoCreationComplete(result: { success: any[], failure: any[] }) {
 }
 
 /**
- * Update the record with an aspect that signifies that the veo creation status.
+ * Update the record with an aspect that signifies the VEO creation status.
  *
  * @param record
  * @param status
  * @returns
  */
 private updateRecordStatus(record: Node, status: 'pending' | 'success' | 'failed') {
-  const aspect = 'vers:veoStatus' + status.charAt(0).toUpperCase() + status.slice(1); // ie aspect = versVeoStatus<P>ending>
-
+  const aspect = 'vers:veoStatus' + status.charAt(0).toUpperCase() + status.slice(1);
   console.log(`Adding aspect ${aspect} to record ${record.id}`);
 
-  // Use the Alfresco API call that adds aspects
-  return this.nodesApiService.updateNode(record.id, {
-    aspectNames: [...(record.aspectNames || []), aspect]
-  });
+  // Helper function to perform the update once we have aspectNames
+  const applyUpdate = (aspectNames: string[] = []) => {
+    return this.nodesApiService.updateNode(record.id, {
+      aspectNames: [...aspectNames, aspect]
+    });
+  };
+
+  // If aspectNames are already available, update directly
+  if (record.aspectNames) {
+    return applyUpdate(record.aspectNames);
+  }
+
+  // Otherwise, fetch the node first, then update
+  return this.nodesApiService.getNode(record.id).pipe(
+    switchMap((node: Node) => {
+    const aspectNames = node.aspectNames || [];
+    return applyUpdate(aspectNames);
+  }));
 }
+
 
 
 getOrCreateFolder(folderName: string, nodeType: string, parentNodeId: string = '-my-'): Observable<Node> {

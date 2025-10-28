@@ -110,27 +110,44 @@
             ]
           },
           {
-        "id": "app.toolbar.more",
-        "children": [
+            "id": "app.toolbar.more",
+            "children": [
+              {
+                "id": "vers.create.veo",
+                "order": 90,
+                "icon": "archive",
+                "title": "VERS.ACTION_CREATE_VEO_TITLE",
+                "actions": {
+                  "click": "CREATE_VEO_ACTION"
+                },
+                "rules": {
+                      "visible": [
+                        "app.isContentServiceEnabled",
+                        "vers.canCreateVeo"
+                      ]
+                    }
+              }
+            ]
+          }
+        ],
+        "contextMenu": [
           {
-            "id": "vers.create.veo",
-            "order": 90,
+            "id": "vers.context.create.veo",
+            "order": 450,
             "icon": "archive",
             "title": "VERS.ACTION_CREATE_VEO_TITLE",
             "actions": {
               "click": "CREATE_VEO_ACTION"
             },
             "rules": {
-                  "visible": [
-                    "app.isContentServiceEnabled",
-                    "vers.canCreateVeo"
-                  ]
-                }
+                "visible": [
+                  "app.isContentServiceEnabled",
+                  "vers.canCreateVeo"
+                ]
+              }
           }
-        ]
-      }
         ],
-         "documentList": {
+        "documentList": {
             "files": [
               {
                 "id": "vers.consignmentId",
@@ -158,6 +175,343 @@
               }
 
             ]
-          }
+          },
+          "search": {
+            "id": "vers.record.search",
+            "order": 400,
+            "name": "Record search",
+            "default": false,
+            "filterWithContains": true,
+            "include": ["path", "aspectNames", "properties"],
+            "sorting": {
+                "options": [
+                {
+                  "key": "score",
+                  "label": "SEARCH.SORT.RELEVANCE",
+                  "type": "SCORE",
+                  "field": "score",
+                  "ascending": false
+                },
+                {
+                  "key": "name",
+                  "label": "SEARCH.SORT.FILENAME",
+                  "type": "FIELD",
+                  "field": "cm:name",
+                  "ascending": true
+                },
+                {
+                  "key": "title",
+                  "label": "SEARCH.SORT.TITLE",
+                  "type": "FIELD",
+                  "field": "cm:title",
+                  "ascending": true
+                },
+                {
+                  "key": "modified",
+                  "label": "SEARCH.SORT.MODIFIED_DATE",
+                  "type": "FIELD",
+                  "field": "cm:modified",
+                  "ascending": true
+                },
+                {
+                  "key": "modifier",
+                  "label": "SEARCH.SORT.MODIFIER",
+                  "type": "FIELD",
+                  "field": "cm:modifier",
+                  "ascending": true
+                },
+                {
+                  "key": "created",
+                  "label": "SEARCH.SORT.CREATE_DATE",
+                  "type": "FIELD",
+                  "field": "cm:created",
+                  "ascending": true
+                },
+                {
+                  "key": "content.sizeInBytes",
+                  "label": "SEARCH.SORT.SIZE",
+                  "type": "FIELD",
+                  "field": "content.size",
+                  "ascending": true
+                },
+                {
+                  "key": "content.mimetype",
+                  "label": "SEARCH.SORT.TYPE",
+                  "type": "FIELD",
+                  "field": "content.mimetype",
+                  "ascending": true
+                }
+              ],
+              "defaults": [
+                {
+                  "key": "score",
+                  "type": "SCORE",
+                  "field": "score",
+                  "ascending": false
+                }
+              ]
+            },
+            "filterQueries": [
+                { "query": "(+ASPECT:'rma:record' AND +TYPE:'cm:content') OR (+TYPE:'rma:recordFolder' AND +ASPECT:'rma:dispositionLifecycle')" },
+                { "query": "-cm:creator:System" }
+            ],
+            "facetQueries": {
+                "mincount": 1,
+                "label": "Content Size",
+                "pageSize": 4,
+                "expanded": true,
+                "queries": [
+                    { "query": "content.mimetype:text/html", "label": "Type: HTML" },
+                    { "query": "content.size:[0 TO 10240]", "label": "Size: extra small" },
+                    { "query": "content.size:[10240 TO 102400]", "label": "Size: small" },
+                    { "query": "content.size:[102400 TO 1048576]", "label": "Size: medium" },
+                    { "query": "content.size:[1048576 TO 16777216]", "label": "Size: large"},
+                    { "query": "content.size:[16777216 TO 134217728]", "label": "Size: extra large" },
+                    { "query": "content.size:[134217728 TO MAX]", "label": "Size: XX large" }
+                ],
+                "settings": {
+                  "allowUpdateOnChange": false,
+                  "hideDefaultAction": true
+                }
+            },
+            "facetFields": {
+                "expanded": true,
+                "fields": [
+                  {
+                        "field": "rma:identifier",
+                        "mincount": 1,
+                        "label": "Record Identifier",
+                        "pageSize": 10,
+                        "settings": {
+                            "allowUpdateOnChange": false,
+                            "hideDefaultAction": true,
+                            "facetOrder": 2
+                        }
+                  },
+                  {
+                        "field": "rma:location",
+                        "mincount": 5,
+                        "label": "Location",
+                        "pageSize": 5,
+                        "settings": {
+                            "allowUpdateOnChange": false,
+                            "hideDefaultAction": true,
+                            "facetOrder": 4
+                        }
+                  },
+                  {
+                        "field": "sc:classificationSearch",
+                        "mincount": 5,
+                        "label": "Current Classification",
+                        "pageSize": 5,
+                        "settings": {
+                            "allowUpdateOnChange": false,
+                            "hideDefaultAction": true,
+                            "facetOrder": 6
+                        }
+                  },
+                  {
+                        "field": "sc:securityMarksSearch",
+                        "mincount": 5,
+                        "label": "Security Marks",
+                        "pageSize": 5,
+                        "settings": {
+                            "allowUpdateOnChange": false,
+                            "hideDefaultAction": true,
+                            "facetOrder": 8
+                        }
+                  },
+                  {
+                        "field": "rma:recordSearchHasDispositionSchedule",
+                        "mincount": 5,
+                        "label": "Has Retention Schedule",
+                        "pageSize": 5,
+                        "settings": {
+                            "allowUpdateOnChange": false,
+                            "hideDefaultAction": true,
+                            "facetOrder": 10
+                        }
+                  },
+                  {
+                        "field": "rma:recordSearchDispositionAuthority",
+                        "mincount": 5,
+                        "label": "Retention Authority",
+                        "pageSize": 5,
+                        "settings": {
+                            "allowUpdateOnChange": false,
+                            "hideDefaultAction": true,
+                            "facetOrder": 10
+                        }
+                  },
+                  {
+                        "field": "rma:recordSearchDispositionEvents",
+                        "mincount": 1,
+                        "label": "Retention Events",
+                        "pageSize": 5,
+                        "settings": {
+                            "allowUpdateOnChange": false,
+                            "hideDefaultAction": true,
+                            "facetOrder": 12
+                        }
+                  },
+                  {
+                        "field": "rma:recordSearchDispositionActionName",
+                        "mincount": 1,
+                        "label": "Retention Action Name",
+                        "pageSize": 5,
+                        "settings": {
+                            "allowUpdateOnChange": false,
+                            "hideDefaultAction": true,
+                            "facetOrder": 12
+                        }
+                  },
+                  {
+                        "field": "rma:recordSearchDispositionActionName",
+                        "mincount": 1,
+                        "label": "Retention Action Name",
+                        "pageSize": 5,
+                        "settings": {
+                            "allowUpdateOnChange": false,
+                            "hideDefaultAction": true,
+                            "facetOrder": 12
+                        }
+                  },
+                  {
+                        "field": "rma:recordSearchDispositionPeriodExpression",
+                        "mincount": 1,
+                        "label": "Retention Period Expression",
+                        "pageSize": 5,
+                        "settings": {
+                            "allowUpdateOnChange": false,
+                            "hideDefaultAction": true,
+                            "facetOrder": 12
+                        }
+                  },
+                  {
+                        "field": "rma:recordSearchDispositionPeriod",
+                        "mincount": 1,
+                        "label": "Retention Period",
+                        "pageSize": 5,
+                        "settings": {
+                            "allowUpdateOnChange": false,
+                            "hideDefaultAction": true,
+                            "facetOrder": 12
+                        }
+                  },
+                  {
+                        "field": "rma:recordSearchDispositionInstructions",
+                        "mincount": 1,
+                        "label": "Retention Instructions",
+                        "pageSize": 5,
+                        "settings": {
+                            "allowUpdateOnChange": false,
+                            "hideDefaultAction": true,
+                            "facetOrder": 12
+                        }
+                  },
+                  {
+                        "field": "content.mimetype",
+                        "mincount": 1,
+                        "label": "Type",
+                        "settings": {
+                            "allowUpdateOnChange": false,
+                            "hideDefaultAction": true,
+                            "facetOrder": 100
+                        }
+                    },
+                    {
+                    "mincount": 1,
+                    "field": "creator",
+                    "label": "SEARCH.FACET_FIELDS.CREATOR",
+                    "settings": {
+                      "allowUpdateOnChange": false,
+                      "hideDefaultAction": true,
+                      "facetOrder": 200
+                    }
+                  },
+                  {
+                    "mincount": 1,
+                    "field": "modifier",
+                    "label": "SEARCH.FACET_FIELDS.MODIFIER",
+                    "settings": {
+                      "allowUpdateOnChange": false,
+                      "hideDefaultAction": true,
+                      "facetOrder": 300
+                    }
+                  }
+
+
+                ]
+            },
+            "categories": [
+              {
+                "id": "vers.record.rma.dateFiled",
+                "name": "Date Filed",
+                "enabled": true,
+                "component": {
+                  "selector": "date-range",
+                  "settings": {
+                    "field": "rma.dateFiled",
+                    "dateFormat": "dd-MMM-yy",
+                    "maxDate": "today",
+                    "displayedLabelsByField": {
+                      "rma.dateFiled": "Filed"
+                    }
+                  }
+                }
+              },
+              {
+                "id": "vers.record.rma.reviewAsOf",
+                "name": "Review Date",
+                "enabled": true,
+                "component": {
+                  "selector": "date-range",
+                  "settings": {
+                    "field": "rma.reviewAsOf",
+                    "dateFormat": "dd-MMM-yy",
+                    "maxDate": "today",
+                    "displayedLabelsByField": {
+                      "rma.reviewAsOf": "Review Date"
+                    }
+                  }
+                }
+              },
+                {
+                    "id": "queryName",
+                    "name": "Name",
+                    "enabled": true,
+                    "component": {
+                        "selector": "text",
+                        "settings": {
+                            "allowUpdateOnChange": false,
+                            "hideDefaultAction": true,
+                            "pattern": "cm:name:'(.*?)'",
+                            "field": "cm:name",
+                            "placeholder": "Enter the name"
+                        }
+                    }
+                },
+                {
+                  "id": "tag",
+                  "name": "Tags",
+                  "enabled": true,
+                  "component": {
+                    "selector": "autocomplete-chips",
+                    "settings": {
+                      "allowUpdateOnChange": false,
+                      "hideDefaultAction": true,
+                      "allowOnlyPredefinedValues": true,
+                      "field": "TAG"
+                    }
+                  },
+                  "rules": {
+                    "visible": [
+                      "app.areTagsEnabled"
+                    ]
+                  }
+                }
+            ]
+        }
+
       }
-  }
+    }
