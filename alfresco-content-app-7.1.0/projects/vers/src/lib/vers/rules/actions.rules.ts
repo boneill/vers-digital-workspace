@@ -2,6 +2,9 @@ import { RuleContext } from '@alfresco/adf-extensions';
 import * as navigation from '@alfresco/aca-shared/rules';
 //import { PathElement } from '@alfresco/js-api';
 
+
+
+
 /**
  * Checks if user selected anything.
  * JSON ref: `app.selection.notEmpty`
@@ -108,7 +111,7 @@ export function isRecordsManager(context: RuleContext): boolean {
   if (groups && groups.length > 0) {
     for (var group of groups) {
       if (group.id && group.id.indexOf('GROUP_RecordsManager') >= 0) {
-        console.log("Records Manager", group.id);
+        //console.log("Records Manager", group.id);
         return true;
       }
     }
@@ -122,11 +125,11 @@ export function isRecordsManager(context: RuleContext): boolean {
  * JSON ref: 'vers.selection.isVeoCreationPending'
  */
 export function isVeoCreationPending(context: RuleContext): boolean {
-  //console.log('hasDispositionLifecycle Context: ', context);
+  //console.log('isVeoCreationPending Context: ', context);
 
-  if (!context.selection.isEmpty && !navigation.isTrashcan(context)) {
-    return context.selection.nodes.every((node: any) => node.entry
-      && (node.entry?.aspectNames?.includes('vers:veoStatusPending')));
+  if (context.selection && !navigation.isTrashcan(context)) {
+    return context.selection.nodes.every((node: any) => node.entry &&
+      (node.entry?.properties['vers:veoStatus'] == "pending"));
   }
   return false;
 }
@@ -137,11 +140,11 @@ export function isVeoCreationPending(context: RuleContext): boolean {
  * JSON ref: 'vers.selection.hasVeoCreationSucceeded'
  */
 export function hasVeoCreationSucceeded(context: RuleContext): boolean {
-  //console.log('hasDispositionLifecycle Context: ', context);
+  console.log('hasVeoCreationSucceeded Context: ', context);
 
-  if (!context.selection.isEmpty && !navigation.isTrashcan(context)) {
-    return context.selection.nodes.every((node: any) => node.entry
-      && (node.entry?.aspectNames?.includes('vers:veoStatusSuccess')));
+  if (context.selection && !navigation.isTrashcan(context)) {
+    return context.selection.nodes.every((node: any) => node.entry &&
+      (node.entry?.properties['vers:veoStatus'] == "success"));
   }
   return false;
 }
@@ -152,11 +155,11 @@ export function hasVeoCreationSucceeded(context: RuleContext): boolean {
  * JSON ref: 'vers.selection.hasVeoCreationFailed'
  */
 export function hasVeoCreationFailed(context: RuleContext): boolean {
-  //console.log('hasDispositionLifecycle Context: ', context);
+  //console.log('hasVeoCreationFailed Context: ', context);
 
-  if (!context.selection.isEmpty && !navigation.isTrashcan(context)) {
-    return context.selection.nodes.every((node: any) => node.entry
-      && (node.entry?.aspectNames?.includes('vers:veoStatusFailed')));
+  if (context.selection && !navigation.isTrashcan(context)) {
+    return context.selection.nodes.every((node: any) => node.entry &&
+      (node.entry?.properties['vers:veoStatus'] == "failed"));
   }
   return false;
 }
@@ -167,16 +170,17 @@ export function hasVeoCreationFailed(context: RuleContext): boolean {
  * JSON ref: 'vers.selection.isPartOfVeoCreationRequest'
  */
 export function isPartOfVeoCreationRequest(context: RuleContext): boolean {
-  //console.log('hasDispositionLifecycle Context: ', context);
+  //console.log('isPartOfVeoCreationRequest Context: ', context);
 
-  if (!context.selection.isEmpty &&
+  if (context.selection &&
     (hasVeoCreationFailed(context) ||
     isVeoCreationPending(context) ||
     hasVeoCreationSucceeded(context))
   ) {
-
+    //console.log('isPartOfVeoCreationRequest true ');
       return true;
   }
+  //console.log('isPartOfVeoCreationRequest false ');
   return false;
 }
 
@@ -187,9 +191,11 @@ export function isPartOfVeoCreationRequest(context: RuleContext): boolean {
  * JSON ref: 'vers.selection.hasDispositionLifecycle'
  */
 export function hasDispositionLifecycle(context: RuleContext): boolean {
-  console.log('hasDispositionLifecycle Context: ', context);
+  //console.log('hasDispositionLifecycle Context: ', context);
 
-  if (!context.selection.isEmpty && !navigation.isTrashcan(context)) {
+  //console.log('hasDispositionLifecycle login: ', !context.selection.isEmpty && !navigation.isTrashcan(context));
+
+  if (context.selection && !navigation.isTrashcan(context)) {
     return context.selection?.nodes?.every((node: any) => node.entry
       &&
       (
@@ -201,24 +207,30 @@ export function hasDispositionLifecycle(context: RuleContext): boolean {
       )
     );
   }
+  //console.log("returning false");
   return false;
-
-
-
-  // var aspects;
-  // if (hasFileSelected(context)) {
-  //   aspects = context?.selection?.file?.entry?.aspectNames;
-  // }
-  // else if(hasFolderSelected(context)){
-  //   aspects = context?.selection?.folder?.entry?.aspectNames;
-  // }
-
-  // if (aspects && aspects.length > 0) {
-  //   for (var aspect of aspects) {
-  //     if (aspect == 'rma:dispositionLifecycle') {
-  //       return true;
-  //     }
-  //   }
-  // }
-  // return false;
 }
+
+/**
+ *
+ */
+// export const isVeoTransfersSite (context: RuleContext): boolean {
+//   //console.log('hasDispositionLifecycle Context: ', context);
+
+//   //console.log('hasDispositionLifecycle login: ', !context.selection.isEmpty && !navigation.isTrashcan(context));
+
+//   if (context.selection && !navigation.isTrashcan(context)) {
+//     return context.selection?.nodes?.every((node: any) => node.entry
+//       &&
+//       (
+//         (node.entry?.aspectNames?.includes('rma:dispositionLifecycle'))  ||
+//         // need the additional check as the selected node will not
+//         // have the aspectNames element if selected from search
+//         (node.entry?.properties['rma:recordSearchHasDispositionSchedule'] == true)
+
+//       )
+//     );
+//   }
+//   //console.log("returning false");
+//   return false;
+// }

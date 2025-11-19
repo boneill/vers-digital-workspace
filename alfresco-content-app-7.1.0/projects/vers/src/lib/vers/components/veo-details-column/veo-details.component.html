@@ -1,0 +1,8 @@
+<span *ngIf="hasVeoStatus()"
+      [matTooltip]="getToolTip()" (click)="onIconClick($event)"
+      (keyup.enter)="onIconClick($event)">
+
+      <adf-icon [value]="getVeoStatusIcon()"></adf-icon>
+      <span class="badge" *ngIf="badgeValue">{{ badgeValue }}</span>
+</span>
+

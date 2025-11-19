@@ -153,13 +153,17 @@ export class TransferFolderDialog implements OnInit {
             access: [access, Validators.required ]
         });
 
-        this.form.controls['name'].valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => (this.disableSubmitButton = false));
+        this.form.controls['name'].valueChanges
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe(() => (this.disableSubmitButton = false));
     }
 
     submit() {
         this.disableSubmitButton = true;
 
-        (this.editing ? this.edit() : this.create()).subscribe(
+        (this.editing ? this.edit() : this.create())
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe(
             (folder: Node) => {
                 this.success.emit(folder);
                 this.dialog.close(folder);

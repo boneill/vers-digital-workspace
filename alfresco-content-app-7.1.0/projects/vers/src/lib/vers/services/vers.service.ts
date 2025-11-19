@@ -1,9 +1,9 @@
 
 
 import { LogService, NotificationService } from '@alfresco/adf-core';
-import { Node, NodeEntry } from '@alfresco/js-api';
+import { AssociationBody, Node, NodeAssociationEntry, NodeAssociationPaging, NodeEntry } from '@alfresco/js-api';
 import { inject, Injectable } from '@angular/core';
-import { catchError, forkJoin, map, Observable, of, Subject, switchMap } from 'rxjs';
+import { catchError, forkJoin, from, map, Observable, of, Subject, switchMap, take, takeUntil } from 'rxjs';
 import { ContentApiService } from '@alfresco/aca-shared';
 import { ContentNodeDialogService, ContentNodeSelectorComponent, ContentNodeSelectorComponentData, DocumentListService, NodesApiService, ShareDataRow } from '@alfresco/adf-content-services';
 import { MatDialog } from '@angular/material/dialog';
@@ -74,11 +74,13 @@ export class VersService {
             role: 'dialog'
           });
 
-          dialogInstance.componentInstance.error.subscribe((message: string) => {
+          dialogInstance.componentInstance.error
+            .pipe(takeUntil(dialogInstance.afterClosed()))
+            .subscribe((message: string) => {
             this.notificationService.showError(message);
           });
 
-          dialogInstance.afterClosed().subscribe((node) => {
+          dialogInstance.afterClosed().pipe(take(1)).subscribe((node) => {
             if (node) {
               this.documentListService.reload();
             }
@@ -131,12 +133,15 @@ createVEOs(transferNode: Node, records: NodeEntry[]) {
   console.log(`createVEOs: in ${transferNode}`, records);
 
   const creationObservables = records.map((record) => {
-    console.log(`Processing Node ID: ${record.entry.id}, Name: ${record.entry.name}`);
+    console.log(`Processing Node ID: ${record.entry.id}, Name: ${record.entry.name}`, record.entry);
 
     // Build VEO name
-    let veoName = record.entry.name.substring(0, record.entry.name.lastIndexOf("."));
+    let veoName = record.entry.name.lastIndexOf(".") > 0
+      ? record.entry.name.substring(0, record.entry.name.lastIndexOf("."))
+      : record.entry.name;
+
     if (record.entry.isFolder) {
-      veoName += `(${record.entry.properties["rma:recordId"]})`;
+      veoName += `(${record.entry.properties["rma:identifier"]})`;
     }
     veoName += ".veo.zip";
 
@@ -148,51 +153,43 @@ createVEOs(transferNode: Node, records: NodeEntry[]) {
         'vers:veoStatus': 'pending',
         'vers:consignmentId': transferNode.properties['vers:consignmentId'],
         'vers:consignmentAccess': transferNode.properties['vers:consignmentAccess'],
-        'vers:linkedRecordNodeRef': record.entry.id
+        'vers:linkedRecordNodeRef': record.entry.id,
+        'vers:linkedRecordName': record.entry.name
       }
     };
 
     // ---- Main Observable ----
     return this.nodesApiService.createNode(transferNode.id, nodeBody).pipe(
-      // ✅ If createNode succeeds
-      switchMap((result) => {
+      switchMap((veoNode) => {
         console.log(`✅ Created VEO for ${record.entry.name}`);
-        return this.updateRecordStatus(record.entry, 'pending').pipe(
+
+        return this.addAssociationFromVeoToRecord(record.entry, veoNode).pipe(
           map(() => ({
             record,
             success: true,
-            result
+            result: veoNode
           })),
-          catchError(updateErr => {
-            console.warn(`⚠️ Created VEO but failed to add aspect to record ${record.entry.name}`, updateErr);
-            return of({
-              record,
-              success: true,
-              result,
-              updateError: updateErr
-            });
+          catchError(assocErr => {
+            console.warn(`⚠️ Failed to add association for ${record.entry.name}`, assocErr);
+            // Decide whether to continue updating status even if association fails
+            return this.updateVeoStatus(veoNode, 'failed').pipe(
+              map(() => ({
+                record,
+                success: false,
+                result: veoNode,
+                associationError: assocErr
+              }))
+            );
           })
         );
       }),
-      // ❌ If createNode fails
-      catchError((error) => {
-        console.error(`❌ Failed to create VEO for ${record.entry.name}`, error);
-        return this.updateRecordStatus(record.entry, 'failed').pipe(
-          map(() => ({
-            record,
-            success: false,
-            error
-          })),
-          catchError(updateError => {
-            console.error(`⚠️ Failed to add aspect to record after VEO creation error`, updateError);
-            return of({
-              record,
-              success: false,
-              error,
-              updateError
-            });
-          })
-        );
+      catchError((createErr) => {
+        console.error(`❌ Failed to create VEO for ${record.entry.name}`, createErr);
+        return of({
+          record,
+          success: false,
+          error: createErr
+        });
       })
     );
   });
@@ -204,6 +201,108 @@ createVEOs(transferNode: Node, records: NodeEntry[]) {
     this.onVeoCreationComplete({ success: successful, failure: failed });
   });
 }
+
+/**
+   * Create a veo node for each of the records in the transfer folder
+   *
+   * @param veo Node to try to create zip for.
+   *
+   * @param records
+   */
+public retryVeoCreation(veoNode: Node | undefined) {
+  //console.log(`retryVeoCreation`, veoNode);
+  if(veoNode){
+  console.log(`retryVeoCreation for Node ID: ${veoNode.id}, Name: ${veoNode.name}`, veoNode);
+
+    this.updateVeoStatus(veoNode, 'pending').subscribe(value => {
+      this.notificationService.showInfo("The VEO create retry has been queued for " + value.name);
+    });
+  }
+}
+
+
+// createVEOs(transferNode: Node, records: NodeEntry[]) {
+//   console.log(`createVEOs: in ${transferNode}`, records);
+
+//   const creationObservables = records.map((record) => {
+//     console.log(`Processing Node ID: ${record.entry.id}, Name: ${record.entry.name}`, record.entry);
+
+//     // Build VEO name
+//     let veoName = record.entry.name.lastIndexOf(".") > 0?
+//       record.entry.name.substring(0, record.entry.name.lastIndexOf(".")) : record.entry.name;
+
+//       if (record.entry.isFolder) {
+//       veoName += `(${record.entry.properties["rma:identifier"]})`;
+//     }
+//     veoName += ".veo.zip";
+
+//     // Define the new VEO node
+//     const nodeBody = {
+//       name: veoName,
+//       nodeType: "vers:veo",
+//       properties: {
+//         'vers:veoStatus': 'pending',
+//         'vers:consignmentId': transferNode.properties['vers:consignmentId'],
+//         'vers:consignmentAccess': transferNode.properties['vers:consignmentAccess'],
+//         'vers:linkedRecordNodeRef': record.entry.id
+//       }
+//     };
+
+//     // ---- Main Observable ----
+//     return this.nodesApiService.createNode(transferNode.id, nodeBody).pipe(
+//       // ✅ If createNode succeeds
+//       switchMap((result) => {
+//         console.log(`✅ Created VEO for ${record.entry.name}`);
+
+//         this.addAssociationFromVeoToRecord(record.entry, result); //TODO add this to a switchmap
+
+//         return this.updateRecordStatus(record.entry, 'pending').pipe(
+//           map(() => ({
+//             record,
+//             success: true,
+//             result
+//           })),
+//           catchError(updateErr => {
+//             console.warn(`⚠️ Created VEO but failed to add aspect to record ${record.entry.name}`, updateErr);
+//             return of({
+//               record,
+//               success: true,
+//               result,
+//               updateError: updateErr
+//             });
+//           })
+//         );
+//       }),
+//       // ❌ If createNode fails
+//       catchError((error) => {
+//         console.error(`❌ Failed to create VEO for ${record.entry.name}`, error);
+//         return this.updateRecordStatus(record.entry, 'failed').pipe(
+//           map(() => ({
+//             record,
+//             success: false,
+//             error
+//           })),
+//           catchError(updateError => {
+//             console.error(`⚠️ Failed to add aspect to record after VEO creation error`, updateError);
+//             return of({
+//               record,
+//               success: false,
+//               error,
+//               updateError
+//             });
+//           })
+//         );
+//       })
+//     );
+//   });
+
+//   forkJoin(creationObservables).subscribe((results) => {
+//     const successful = results.filter(r => r.success);
+//     const failed = results.filter(r => !r.success);
+
+//     this.onVeoCreationComplete({ success: successful, failure: failed });
+//   });
+// }
 
 
 /**
@@ -233,28 +332,121 @@ onVeoCreationComplete(result: { success: any[], failure: any[] }) {
  * @param status
  * @returns
  */
-private updateRecordStatus(record: Node, status: 'pending' | 'success' | 'failed') {
-  const aspect = 'vers:veoStatus' + status.charAt(0).toUpperCase() + status.slice(1);
-  console.log(`Adding aspect ${aspect} to record ${record.id}`);
-
-  // Helper function to perform the update once we have aspectNames
-  const applyUpdate = (aspectNames: string[] = []) => {
-    return this.nodesApiService.updateNode(record.id, {
-      aspectNames: [...aspectNames, aspect]
-    });
-  };
-
-  // If aspectNames are already available, update directly
-  if (record.aspectNames) {
-    return applyUpdate(record.aspectNames);
+/**
+ * Update the Veo with the veo status
+ *
+ * @param veo
+ * @param status
+ * @returns
+ */
+private updateVeoStatus(veo: Node,  status: 'pending' | 'success' | 'failed') {
+  //const aspect = 'vers:veoStatus' + status.charAt(0).toUpperCase() + status.slice(1);
+  console.log(`Adding veoStatus of status ${status} to veo ${veo.id}`);
+  var properties = veo.properties;
+  if(properties){
+    properties["vers:veoStatus"] = status;
   }
 
-  // Otherwise, fetch the node first, then update
-  return this.nodesApiService.getNode(record.id).pipe(
-    switchMap((node: Node) => {
-    const aspectNames = node.aspectNames || [];
-    return applyUpdate(aspectNames);
-  }));
+  return this.nodesApiService.updateNode(veo.id, {
+      properties: properties
+    });
+}
+
+
+// private updateRecordStatus(record: Node,  status: 'pending' | 'success' | 'failed') {
+//   const aspect = 'vers:veoStatus' + status.charAt(0).toUpperCase() + status.slice(1);
+//   console.log(`Adding veoStatus of aspect ${aspect} to record ${record.id}`);
+
+//   // Helper function to perform the update once we have aspectNames
+//   const applyUpdate = (aspectNames: string[] = []) => {
+//     return this.nodesApiService.updateNode(record.id, {
+//       aspectNames: [...aspectNames, aspect]
+//     });
+//   };
+
+//   // If aspectNames are already available, update directly
+//   if (record.aspectNames) {
+//     return applyUpdate(record.aspectNames);
+//   }
+
+
+
+//   // Otherwise, fetch the node first, then update
+//   return this.nodesApiService.getNode(record.id).pipe(
+//     switchMap((node: Node) => {
+//     const aspectNames = node.aspectNames || [];
+//     return applyUpdate(aspectNames);
+//   }));
+// }
+
+/**
+ * Update the VEO to add the association between the veo and the record
+ *
+ * @param record
+ * @param status
+ * @returns
+ */
+private addAssociationFromVeoToRecord(record: Node, veo: Node) {
+    const body: AssociationBody = {
+          targetId: record.id,
+          assocType: "vers:linkedRecord"
+    };
+
+    return from(this.nodesApiService.nodesApi.createAssociation(veo.id, body));
+
+}
+
+/**
+ * Get VEO node associated with the record.  It should be based on an assocation set on the
+ * veo that points at the record.
+ *
+ * @param record
+ * @param status
+ * @returns
+ */
+public getVeoNodeFromRecord(record: Node): Observable<NodeAssociationEntry | null> {
+  const opts = {
+    where: `(assocType='vers:linkedRecord')`,
+    include:['properties']
+  };
+
+  return from(
+    this.nodesApiService.nodesApi.listSourceAssociations(record.id, opts)
+  ).pipe(
+    map((res: NodeAssociationPaging) => {
+      const associations = res?.list?.entries || [];
+      return associations.length ? associations[0] : null; // return single item or null
+    })
+  );
+}
+
+/**
+ * Get the record associated with the veo.  It should be based on an assocation set on the
+ * veo that points at the record.
+ *
+ * @param Node of type vers:veo
+ * @param status
+ * @returns
+ */
+public getRecordFromVeo(veo: Node): Observable<Node | undefined> {
+
+  if (!veo || veo.nodeType !== "vers:veo") {
+    return of(undefined);
+  }
+
+  const opts = {
+    where: `(assocType='vers:linkedRecord')`,
+    include:['properties']
+  };
+
+  return from(
+    this.nodesApiService.nodesApi.listTargetAssociations(veo.id, opts)
+  ).pipe(
+    map((res: NodeAssociationPaging) => {
+      const associations = res?.list?.entries || [];
+      return associations.length ? associations[0]?.entry : undefined; // return single item or null
+    })
+  );
 }
 
 
@@ -333,6 +525,7 @@ getOrCreateFolder(folderName: string, nodeType: string, parentNodeId: string = '
             role: 'dialog'
           })
           .afterClosed()
+          .pipe(take(1))
           .subscribe(() => {
 
             if(focusedElementOnCloseSelector)

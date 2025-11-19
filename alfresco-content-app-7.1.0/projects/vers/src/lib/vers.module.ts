@@ -10,6 +10,8 @@ import { VersEffects } from './vers/effects/vers.effects';
 import { hasDispositionLifecycle, hasVeoCreationFailed, hasVeoCreationSucceeded,
   isParentTransferFolder, isPartOfVeoCreationRequest, isRecordsManager,
   isRootForTransfers, isTransferFolder, isVeoCreationPending} from './vers/rules/actions.rules';
+import { VeoDetailsColumnComponent } from './vers/components/veo-details-column/veo-details.component';
+import { VeoInformationTabComponent } from './vers/components/veo-information-tab/veo-information-tab.component';
 //import { MyExtensionService } from './my-extension.service';
 
 
@@ -29,7 +31,12 @@ export function provideVersExtension(): (Provider | EnvironmentProviders)[] {
         'vers.selection.hasVeoCreationFailed': hasVeoCreationFailed,
         'vers.selection.isVeoCreationPending': isVeoCreationPending,
         'vers.selection.isPartOfVeoCreationRequest': isPartOfVeoCreationRequest,
+      },
+      components: {
+        'vers.components.columns.veostatus': VeoDetailsColumnComponent,
+        "vers.components.tabs.veo-details": VeoInformationTabComponent,
       }
+
     })
   ];
 }

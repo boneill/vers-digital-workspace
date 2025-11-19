@@ -1,0 +1,14 @@
+mat-card-actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;  // left align
+  padding: 0;                   // optional cleanup
+
+  .adf-action-button {
+    text-transform: uppercase;
+
+    span {
+      font-weight: 500;
+    }
+  }
+}

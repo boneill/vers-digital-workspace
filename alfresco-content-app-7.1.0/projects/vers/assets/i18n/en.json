@@ -1,6 +1,7 @@
 {
   "VERS": {
     "ACTION_CREATE_VEO_TITLE": "Create VEO",
+    "ACTION_RETRY_CREATE_VEO_TITLE": "Recreate VEO",
     "ACTION_CREATE_VERS_TRANSFER": "Create Vers Transfer",
     "ERRORS": {
       "UNSUPPORTED_PLATFORM": "Only supported for Windows and MacOS platforms",
@@ -23,7 +24,22 @@
       "COLUMNS":{
         "CONSIGNMENT_ID":"Consignment Id",
         "CONSIGNMENT_ACCESS": "Access"
+      },
+      "VEO_STATUS": {
+        "SUCCESS": "VEO Created.  Click on icon to view VEO.",
+        "PENDING": "VEO creation pending",
+        "FAILED": "VEO creation failed"
+
       }
+    },
+    "TABS":{
+      "INFO_DRAWER": {
+        "TABS": {
+          "VEO_DETAILS": "VEO Details"
+        }
+
+      }
+
     }
   }
 }
