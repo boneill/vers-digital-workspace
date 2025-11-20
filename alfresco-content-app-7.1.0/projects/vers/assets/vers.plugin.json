@@ -184,12 +184,7 @@
           "sortable": false,
           "template": "vers.components.columns.veostatus",
           "desktopOnly": false,
-          "order": 21,
-          "rules": {
-            "visible": [
-              "app.areTagsEnabled"
-            ]
-          }
+          "order": 21
         },
         {
           "id": "vers.consignmentId",
@@ -201,7 +196,12 @@
           "sortable": true,
           "desktopOnly": false,
           "order": 25,
-          "draggable": true
+          "draggable": true,
+          "rules": {
+            "visible": [
+              "vers.navigation.isVeoTransfersSite"
+            ]
+          }
         },
         {
           "id": "vers.consignmentAccess",
@@ -213,7 +213,23 @@
           "sortable": true,
           "desktopOnly": false,
           "order": 26,
-          "draggable": true
+          "draggable": true,
+          "rules": {
+            "visible": [
+              "vers.navigation.isVeoTransfersSite"
+            ]
+          }
+        }
+      ],
+      "search-results": [
+         {
+          "id": "vers.search.veoStatus",
+          "key": "properties.vers:veoStatus",
+          "type": "image",
+          "sortable": false,
+          "template": "vers.components.columns.veostatus",
+          "desktopOnly": false,
+          "order": 21
         }
       ]
     },

@@ -212,25 +212,22 @@ export function hasDispositionLifecycle(context: RuleContext): boolean {
 }
 
 /**
+ checks if the current navigation is within the vers-transfers site
+
  *
+ * JSON ref: 'vers.navigation.isVeoTransfersSite'
  */
-// export const isVeoTransfersSite (context: RuleContext): boolean {
-//   //console.log('hasDispositionLifecycle Context: ', context);
+export function isVeoTransfersSite (context: RuleContext): boolean {
 
-//   //console.log('hasDispositionLifecycle login: ', !context.selection.isEmpty && !navigation.isTrashcan(context));
+  console.log('isVeoTransfersSite Context: ', context, navigation);
 
-//   if (context.selection && !navigation.isTrashcan(context)) {
-//     return context.selection?.nodes?.every((node: any) => node.entry
-//       &&
-//       (
-//         (node.entry?.aspectNames?.includes('rma:dispositionLifecycle'))  ||
-//         // need the additional check as the selected node will not
-//         // have the aspectNames element if selected from search
-//         (node.entry?.properties['rma:recordSearchHasDispositionSchedule'] == true)
+  if (context && context.navigation && context.navigation.currentFolder
+    && context.navigation.currentFolder.path?.name && context.navigation.currentFolder.path.name.includes('/Company Home/Sites/veo-transfers') ) {
 
-//       )
-//     );
-//   }
-//   //console.log("returning false");
-//   return false;
-// }
+      console.log("isVeoTransfersSite true", context);
+      return true;
+  }
+
+  console.log("isVeoTransfersSite false");
+  return false;
+}

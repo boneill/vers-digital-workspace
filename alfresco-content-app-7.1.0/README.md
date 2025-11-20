@@ -71,6 +71,6 @@ Upon changing unit tests code, you can track the coverage results either in the 
 
 ### Build Code
 go to root of project
-npm run build
+npm run build --configuration=production
 go to dist/content-ce and zip contents
 zip -r vers.zip .
